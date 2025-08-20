@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Offline Document Verifier (Smart Helmet Demo)</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+  <div class="container">
+    <h1>Offline Document Verifier</h1>
+    <p>Paste the credential token or upload a QR image. This app verifies the signature <strong>offline</strong> using Ed25519 public key.</p>
+
+    <form method="post" enctype="multipart/form-data" class="card">
+      <label>Credential Token (text):</label>
+      <textarea name="token" rows="5" placeholder="BASE64URL(header).BASE64URL(payload).BASE64URL(signature)">{{ token_text }}</textarea>
+
+      <div class="or">— OR —</div>
+
+      <label>QR Image (PNG/JPG):</label>
+      <input type="file" name="qr_image" accept="image/*" />
+
+      <button type="submit">Verify Offline</button>
+    </form>
+
+    {% if result %}
+    <div class="card">
+      <h2>Result</h2>
+      <p class="result">{{ result }}</p>
+      <h3>Header</h3>
+      <pre>{{ header | tojson(indent=2) }}</pre>
+      <h3>Payload</h3>
+      <pre>{{ payload | tojson(indent=2) }}</pre>
+      {% if reasons and reasons|length > 0 %}
+      <h3>Reasons</h3>
+      <ul>
+        {% for r in reasons %}<li>{{ r }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <footer>
+      <p>Smart Helmet Demo • Works offline after initial load • Keep the public key in <code>output/ed25519_public.pem</code></p>
+    </footer>
+  </div>
+</body>
+</html>
